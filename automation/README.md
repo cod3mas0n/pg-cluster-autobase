@@ -97,6 +97,11 @@ Autobase adheres to a modular design separating atomic logic (roles) and orchest
 - `config_pgcluster` – Reconfigure PostgreSQL cluster settings (users, databases, extensions, etc.) after the initial deployment.
 - `update_pgcluster` – Perform rolling updates of PostgreSQL or system packages with minimal downtime.
 - `pg_upgrade` – Perform a major version in-place upgrade of PostgreSQL with minimal downtime.
+  - `pg_upgrade_rollback` - Performs a rollback of a PostgreSQL upgrade (if possible).
+- `pg_logical_upgrade` - Upgrades the target cluster and converting a physical replica into a logical replica.
+  - `pg_logical_switchover` - Redirects PostgreSQL traffic from the source cluster to the target cluster with near-zero downtime.
+  - `pg_logical_switchover_rollback` -  Switches PostgreSQL traffic back to the source cluster.
+  - `pg_logical_replication_stop` - Clean up publications, subscriptions, and replication slots.
 
 #### Scaling
 
