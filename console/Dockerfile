@@ -1,3 +1,10 @@
+# dbdesk-studio image (frontend + Express backend)
+ARG DBDESK_STUDIO_VERSION=0.1.5
+FROM docker.io/bhavikagarwal2001/dbdesk-studio:${DBDESK_STUDIO_VERSION} AS dbdesk-studio
+
+# Node.js runtime binary (for dbdesk-studio Express server)
+FROM node:22-bookworm-slim AS node-runtime
+
 # build-env
 FROM golang:1.26-bookworm AS api-builder
 WORKDIR /go/src/pg-console
@@ -48,6 +55,16 @@ ENV PG_CONSOLE_API_PORT=${PG_CONSOLE_API_PORT:-8080}
 ARG PG_CONSOLE_UI_PORT
 ENV PG_CONSOLE_UI_PORT=${PG_CONSOLE_UI_PORT:-80}
 
+ARG PG_CONSOLE_DBDESK_STUDIO_PORT
+ENV PG_CONSOLE_DBDESK_STUDIO_PORT=${PG_CONSOLE_DBDESK_STUDIO_PORT:-9876}
+
+ARG DBDESK_EXPRESS_PORT
+ENV DBDESK_EXPRESS_PORT=${DBDESK_EXPRESS_PORT:-6789}
+
+ENV PG_CONSOLE_DBDESK_STUDIO_URL="/dbdesk/"
+ENV PG_CONSOLE_DBDESK_STUDIO_API_URL="http://127.0.0.1:6789"
+ENV CORS_ORIGIN="*"
+
 # Set SHELL to /bin/bash
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -87,7 +104,15 @@ RUN chmod +x /pg_start.sh
 # supervisord [https://docs.docker.com/engine/admin/using_supervisord/]
 COPY console/supervisord.conf /etc/supervisor/supervisord.conf
 
+# Node.js runtime for dbdesk-studio
+COPY --from=node-runtime /usr/local/bin/node /usr/local/bin/node
+
+# dbdesk-studio: frontend static files + Express backend
+COPY --from=dbdesk-studio /usr/share/nginx/html /usr/share/nginx/dbdesk
+COPY --from=dbdesk-studio /app /opt/dbdesk-studio
+
 VOLUME /var/lib/postgresql
+VOLUME /opt/dbdesk-studio
 
 # Console DB
 EXPOSE ${POSTGRES_PORT}
@@ -95,6 +120,8 @@ EXPOSE ${POSTGRES_PORT}
 EXPOSE ${PG_CONSOLE_API_PORT}
 # Console UI
 EXPOSE ${PG_CONSOLE_UI_PORT}
+# DBDesk Studio
+EXPOSE ${PG_CONSOLE_DBDESK_STUDIO_PORT}
 
 # Override the ENTRYPOINT set by nginx image
 ENTRYPOINT []
