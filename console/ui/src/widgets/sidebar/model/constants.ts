@@ -17,11 +17,6 @@ export const sidebarData = (t: TFunction) => {
       label: t('clusters', { ns: 'clusters' }),
       path: RouterPaths.clusters.absolutePath,
     },
-    {
-      icon: OperationsIcon,
-      label: t('operations', { ns: 'operations' }),
-      path: RouterPaths.operations.absolutePath,
-    },
   ];
 
   if (DBDESK_URL) {
@@ -31,6 +26,12 @@ export const sidebarData = (t: TFunction) => {
       path: RouterPaths.sqlEditor.absolutePath,
     });
   }
+
+  items.push({
+    icon: OperationsIcon,
+    label: t('operations', { ns: 'operations' }),
+    path: RouterPaths.operations.absolutePath,
+  });
 
   items.push({
     icon: SettingsIcon,
