@@ -94,6 +94,7 @@ jobs:
             automation/galaxy.yml \
             automation/README.md \
             console/docker-compose.yml \
+            console/docker-compose.caddy.yml \
             console/service/VERSION \
             console/service/README.md \
             console/service/api/swagger.yaml \
